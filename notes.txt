@@ -1,3 +1,0 @@
-- memoria vettore allocata raddoppia se piena
-
-- RICORDA -> constrollo se valore iniziale capacity = 0 

@@ -4,17 +4,20 @@
 
 int main()
 {
-	std::vector<int> v2;
-	v2.push_back(1);
-	v2.push_back(2);
-	v2.push_back(3);
-	std::vector<int> v(v2.begin(), v2.end());
+	std::vector<int> v;
+	v.push_back(1);
+	v.push_back(2);
+	v.push_back(3);
+	ft::vector<int> myv(v.begin(), v.end());
+	ft::vector<int> myv1 = myv;
+	myv1 = myv;
 
-	ft::vector<int> v1(v2.begin(), v2.end());
-
-	std::cout << v.capacity() << std::endl;
-	// v.push_back(7);
-	// std::cout << v.capacity() << std::endl;
+	std::cout << myv[0] << std::endl;
+	std::cout << myv1[0] << std::endl;
+	std::cout << myv[1] << std::endl;
+	std::cout << myv1[1] << std::endl;
+	std::cout << myv[2] << std::endl;
+	std::cout << myv1[2] << std::endl;
 
 	return 0;
 }

@@ -1,7 +1,9 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include "utils.hpp"
 #include <memory>
+
 
 namespace ft
 {
@@ -59,6 +61,8 @@ namespace ft
 			*/
 			typedef typename allocator_type::const_pointer      const_pointer;
 
+			typedef typename std::ptrdiff_t		difference_type;
+
 			// /*
 			// ** A random access iterator to value_type
 			// ** That can read or modify any element stored.
@@ -100,8 +104,16 @@ namespace ft
 			_alloc(alloc), end(nullptr), start(nullptr), capacity(0), size(0) {}
 
 			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) :
-			_alloc(alloc), end(nullptr), start(nullptr), capacity(n), size(n)
+			_alloc(alloc), start(nullptr), end(nullptr), size(n), capacity(n)
 			{
+				try
+				{
+					if ( n > 4611686018427387903 )
+						throw std::exception();
+				}
+				catch(const std::exception& e)
+				{
+				}
 				start = _alloc.allocate( n );
 				end = start;
 				while (n--)
@@ -112,29 +124,124 @@ namespace ft
 			}
 
 			template < class InputIterator >
-			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) :
-			_alloc(alloc), end(nullptr), start(nullptr)
+			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
+					typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) :
+			_alloc(alloc), start(nullptr), end(nullptr)
 			{
-				start = _alloc.allocate( last - first );
-				end = start;
-				for (InputIterator it = first; it != last; it++)
+				size_type n = ft::distance(first, last);
+				try
 				{
-					_alloc.construct(end, *it);
+					if ( n > 4611686018427387903 )
+						throw std::exception();
+				}
+				catch(const std::exception& e)
+				{
+				}
+				start = _alloc.allocate( n );
+				size = n;
+				capacity = n;
+				end = start;
+				while (n--)
+				{
+					_alloc.construct(end, *first);
+					first++;
+					end++;
+				}
+			}
+			
+			vector(const vector& x) :
+			_alloc(x._alloc), start(nullptr), end(nullptr), size(x.size), capacity(x.capacity)
+			{
+				start = this->_alloc.allocate( capacity );
+				end = start;
+				for( pointer temp = x.start; temp != x.end; temp++)
+				{
+					_alloc.construct(end, *temp);
 					end++;
 				}
 			}
 
+			// Destructor :
+
+				~vector()
+				{
+					for (; size > 0; size--)
+					{
+						_alloc.destroy(end);
+						end--;
+					}
+					_alloc.deallocate(start, capacity);
+				}
+
+			// Operators :
+
+			vector & operator=(const vector& x)
+			{
+				for (; size > 0; size--)
+				{
+					_alloc.destroy(end);
+					end--;
+				}
+				_alloc.deallocate(start, capacity);
+				_alloc = x._alloc;
+				start = nullptr;
+				end = nullptr;
+				size = x.size;
+				capacity = x.capacity;
+				start = this->_alloc.allocate( capacity );
+				end = start;
+				for( pointer temp = x.start; temp != x.end; temp++)
+				{
+					_alloc.construct(end, *temp);
+					end++;
+				}
+				return *this;
+			}
+
+			int &	operator[](int pos)
+			{
+				pointer temp = this->start;
+				while (pos--)
+				{
+					temp++;
+				}
+				return *temp;
+			}
+
+			// Capacity functions :
+
+			size_type size() const { return size; }
+
+			size_type max_size() const { return max_size; }
+
+			size_type capacity() const { return capacity; }
+
+			bool empty() const 
+			{ 
+				if (size > 0)
+					return true;
+				return false;
+			}
+
+			//void	reserve( size_type n )
+
+			//void	resize( size_type n )
+			//void	resize( size_type n, value_type val = value_type() )
+
+
+
 
 		private :
-			T* array;
 			allocator_type _alloc;
 			pointer	start;
 			pointer end;
-			unsigned long int size;
-			unsigned long int capacity;
-			static const unsigned long int max_size = 4611686018427387903;
+			size_type size;
+			size_type capacity;
+			size_type max_size = 4611686018427387903;
+			
 
 	};
+
 }
 
 #endif
