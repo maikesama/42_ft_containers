@@ -4,20 +4,16 @@
 
 int main()
 {
-	std::vector<int> v;
-	v.push_back(1);
-	v.push_back(2);
-	v.push_back(3);
-	ft::vector<int> myv(v.begin(), v.end());
-	ft::vector<int> myv1 = myv;
-	myv1 = myv;
 
-	std::cout << myv[0] << std::endl;
-	std::cout << myv1[0] << std::endl;
-	std::cout << myv[1] << std::endl;
-	std::cout << myv1[1] << std::endl;
-	std::cout << myv[2] << std::endl;
-	std::cout << myv1[2] << std::endl;
+	ft::vector<int> myv;
+	for (int i = 1; i < 10; i++) myv.push_back(i);
+
+	myv.pop_back();
+
+	std::cout << myv.front() << std::endl;
+	std::cout << myv.back() << std::endl;
+	for (int i = 0; i < myv.size(); i++)
+		std::cout << myv[i] << " ";
 
 	return 0;
 }
