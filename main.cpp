@@ -5,15 +5,30 @@
 int main()
 {
 
+	
 	ft::vector<int> myv;
-	for (int i = 1; i < 10; i++) myv.push_back(i);
+	
+	for (int i = 0; i < 10; i++) myv.push_back(i);
 
-	myv.pop_back();
+	ft::vector<int>::reverse_iterator rit = myv.rbegin();
 
-	std::cout << myv.front() << std::endl;
-	std::cout << myv.back() << std::endl;
-	for (int i = 0; i < myv.size(); i++)
-		std::cout << myv[i] << " ";
+	// if (myv <= mv) std::cout << "min" << std::endl;
+	// if (myv >= mv) std::cout << "greater" << std::endl;
+
+	
+	for (; rit != myv.rend(); rit++)
+		std::cout << *rit << std::endl;
+
+
+	// for (ft::vector<int>::iterator it = mv.begin(); it != mv.end(); it++)
+	// 	std::cout << *it << " ";
+
+	// for (unsigned long int i = 0; i < myv.size(); i++)
+	// 	std::cout << myv[i] << " ";
+	// std::cout << std::endl;
+	// for (unsigned long int i = 0; i < mv.size(); i++)
+	// 	std::cout << mv[i] << " ";
+	// std::cout << std::endl;
 
 	return 0;
 }
