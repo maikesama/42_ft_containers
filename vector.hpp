@@ -147,15 +147,15 @@ namespace ft
 				_alloc = x._alloc;
 				_size = x._size;
 				_capacity = x._capacity;
-				start = this->_alloc.allocate( _capacity );
+				start = this->_alloc.allocate( _capacity + 1 );
 				_end = start;
-				for( pointer temp = x.start; temp != x._end; temp++)
+				for( const_iterator it = x.begin(); it != x.end(); it++)
 				{
 					
-					_alloc.construct(_end, *temp);
+					_alloc.construct(_end, *it);
 					_end++;
 				}
-				_alloc.construct(_end, *x._end);
+				_end--;
 				return *this;
 			}
 
@@ -373,6 +373,221 @@ namespace ft
 				_alloc.destroy(_end);
 				while (n--)
 					push_back(val);
+			}
+
+			iterator insert( iterator position, const value_type& val )
+			{
+				size_type pos = &(*position) - start;
+				if (_size + 1 > _capacity )
+				{
+					pointer newstart = _alloc.allocate((_capacity * 2 > 0 ? _capacity * 2 : 1));
+					_capacity = (_capacity * 2 > 0 ? _capacity * 2 : 1);
+					pointer newend = newstart;
+
+					for (iterator it = begin(); it != position; it++)
+					{
+						_alloc.construct(newend, *it);
+						newend++;
+					}
+					_alloc.construct(newend, val);
+					newend++;
+					for (iterator it = position; &(*it) != nullptr && it != end(); it++)
+					{
+						_alloc.construct(newend, *it);
+						newend++;
+					}
+					
+					for (size_type l = 0; l < size(); l++)
+						_alloc.destroy(start + l);
+					if (start)
+						_alloc.deallocate(start, capacity());
+
+					newend--;
+					start = newstart;
+					_end = newend;
+					_size++;
+				}
+				else
+				{
+					_size++;
+					pointer temp = start;
+					iterator it = begin();
+					while (it != position)
+					{
+						it++;
+						temp++;
+					}
+					value_type t = *temp;
+					_alloc.destroy(temp);
+					_alloc.construct(temp++, val);
+					size_type x = _end - &(*position);
+					while (x--)
+					{
+						value_type t2 = *temp;
+						_alloc.destroy(temp);
+						_alloc.construct(temp++, t);
+						t = t2;
+					}
+					_alloc.construct(temp, t);
+					_end = temp;
+				}
+				return (iterator(start + pos));
+			}
+
+			void insert (iterator position, size_type n, const value_type& val)
+			{
+				if (_size + n > _capacity)
+				{
+					while (_capacity < _size + n)
+						_capacity = (_capacity * 2 > 0 ? _capacity * 2 : 1);
+					pointer newstart = _alloc.allocate(_capacity);
+					pointer newend = newstart;
+
+					iterator it = begin();
+					for (; it != position; it++)
+					{
+						_alloc.construct(newend, *it);
+						newend++;
+					}
+					for (size_type tmp = n; tmp; tmp--)
+					{
+						_alloc.construct(newend, val);
+						newend++;
+					}
+					for (; &(*it) != nullptr && it != end(); it++)
+					{
+						_alloc.construct(newend, *it);
+						newend++;
+					}
+					
+					for (size_type l = 0; l < size(); l++)
+						_alloc.destroy(start + l);
+					if (start)
+						_alloc.deallocate(start, capacity());
+
+					newend--;
+					start = newstart;
+					_end = newend;
+					_size += n;
+				}
+				else
+				{
+					_size += n;
+					pointer temp = start;
+					iterator it = begin();
+					while (it != position)
+					{
+						it++;
+						temp++;
+					}
+					ft::vector<value_type> t;
+					for (; it != end(); it++)
+						t.push_back(*it);	
+					for (size_type counter = n; counter; counter--)
+					{
+						_alloc.destroy(temp);
+						_alloc.construct(temp++, val);
+					}
+					for (size_type i = 0; i < t.size(); i++)
+					{
+						_alloc.destroy(temp);
+						_alloc.construct(temp++, t[i]);
+					}
+					_end = temp - 1;
+				}
+				return ;
+			}
+
+			// template <class InputIterator>
+    		// void insert (iterator position, InputIterator first, InputIterator last);
+			// {
+			// 	difference_type diff = last - first;
+			// 	if (_size + diff > _capacity)
+			// 	{
+			// 		// while (_capacity < _size + diff)
+			// 		// 	_capacity = (_capacity * 2 > 0 ? _capacity * 2 : 1);
+			// 		// pointer newstart = _alloc.allocate(_capacity);
+			// 		// pointer newend = newstart;
+
+			// 		// iterator it = begin();
+			// 		// for (; it != position; it++)
+			// 		// {
+			// 		// 	_alloc.construct(newend, *it);
+			// 		// 	newend++;
+			// 		// }
+			// 		// for (; &(*first) != nullptr && first != last; first++)
+			// 		// {
+			// 		// 	_alloc.construct(newend, *first);
+			// 		// 	newend++;
+			// 		// }
+			// 		// for (; &(*it) != nullptr && it != end(); it++)
+			// 		// {
+			// 		// 	_alloc.construct(newend, *it);
+			// 		// 	newend++;
+			// 		// }
+					
+			// 		// for (size_type l = 0; l < size(); l++)
+			// 		// 	_alloc.destroy(start + l);
+			// 		// if (start)
+			// 		// 	_alloc.deallocate(start, capacity());
+
+			// 		// newend--;
+			// 		// start = newstart;
+			// 		// _end = newend;
+			// 		// _size += diff;
+			// 	}
+			// 	else
+			// 	{
+					
+			// 	}
+			// 	return ;
+			// }
+
+			iterator erase (iterator position)
+			{
+				ft::vector<value_type> t;
+				for (iterator it = position; &(*it) != nullptr && it != end();)
+				{
+					it++;
+					t.push_back(*it);
+				}
+				pointer temp = start;
+				while (temp != &(*position)) temp++;
+				pointer ret = temp;
+				for (pointer p = temp; p != _end; p++)
+					_alloc.destroy(p);
+				for (size_type i = 0; i < t.size(); i++)
+				{
+					_alloc.construct(temp, t[i]);
+					temp++;
+				}
+				_end--;
+				_size--;
+				return iterator(ret);
+			}
+
+			iterator erase (iterator first, iterator last)
+			{
+				difference_type diff = last - first;
+				ft::vector<value_type> t;
+				for (iterator it = last; &(*it) != nullptr && it != end();)
+				{
+					it++;
+					t.push_back(*it);
+				}
+				pointer temp = start;
+				while (temp != &(*first)) temp++;
+				pointer ret = temp;
+				for (pointer p = &(*first); p != &(*last); p++)
+					_alloc.destroy(p);
+				for (size_type i = 0; i < t.size(); i++)
+				{
+					_alloc.construct(temp, t[i]);
+					temp++;
+				}
+				_end -= diff;
+				_size -= diff;
+				return (iterator(ret));
 			}
 
 			void	clear()
