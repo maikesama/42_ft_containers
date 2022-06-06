@@ -1,6 +1,8 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include "iterators.hpp"
+
 namespace ft
 {
 
@@ -151,6 +153,32 @@ namespace ft
 	// structure where the type will be verified
 	template < typename T >
 		struct is_integral : public is_integral_type<T> {}; 
+
+	template <bool is_valid, typename T>
+        struct valid_iterator_tag_res { typedef T type; const static bool value = is_valid; };
+    
+    template <typename T>
+        struct is_input_iterator_tagged : public valid_iterator_tag_res<false, T> { };
+
+    /* Check is_input_iterator_tagged from ft::random_access_iterator_tag */
+    template <>
+        struct is_input_iterator_tagged<ft::random_access_iterator_tag>
+            : public valid_iterator_tag_res<true, ft::random_access_iterator_tag> { };
+
+    /* Check is_input_iterator_tagged from ft::bidirectional_iterator_tag */
+    template <>
+        struct is_input_iterator_tagged<ft::bidirectional_iterator_tag>
+            : public valid_iterator_tag_res<true, ft::bidirectional_iterator_tag> { };
+
+    /* Check is_input_iterator_tagged from ft::forward_iterator_tag */
+    template <>
+        struct is_input_iterator_tagged<ft::forward_iterator_tag>
+            : public valid_iterator_tag_res<true, ft::forward_iterator_tag> { };
+
+    /* Check is_input_iterator_tagged from ft::input_iterator_tag */
+    template <>
+        struct is_input_iterator_tagged<ft::input_iterator_tag>
+            : public valid_iterator_tag_res<true, ft::input_iterator_tag> { };
 
 
 }

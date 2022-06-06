@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include "iterators.hpp"
 #include <memory>
+#include <iostream>
 
 
 namespace ft
@@ -62,7 +63,7 @@ namespace ft
 			*/
 			typedef typename allocator_type::const_pointer      const_pointer;
 
-			typedef typename std::ptrdiff_t		difference_type;
+			typedef ptrdiff_t	difference_type;
 
 			// /*
 			// ** A random access iterator to value_type
