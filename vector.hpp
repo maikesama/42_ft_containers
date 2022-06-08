@@ -1,10 +1,10 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include "utils.hpp"
 #include "iterators.hpp"
 #include <memory>
 #include <iostream>
+#include "utils.hpp"
 
 
 namespace ft
@@ -124,7 +124,7 @@ namespace ft
 					typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = nullptr) :
 			_alloc(alloc), start(nullptr), _end(nullptr)
 			{
-				size_type n = ft::distance(first, last);
+				size_type n = ft::distnce(first, last);
 				sizecheck( n );
 				start = _alloc.allocate( n );
 				_size = n;

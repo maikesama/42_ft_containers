@@ -75,7 +75,7 @@ namespace ft
 
 	/* Distance between pointers */
 	template < class InputIterator >
-	int	distance(InputIterator start, InputIterator end)
+	int	distnce(InputIterator start, InputIterator end)
 	{
 		int	dist = 0;
 		for(; start != end; start++)
